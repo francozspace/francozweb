@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+   <meta charset="UTF-8">  
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title></title>
+<style>
+html {
+font-family: serif; font-size: 15px; line-height: 20px;
+}
+body {margin:0px; padding:0px; background: #ffffff;}
+@font-face {
+      font-family: 'mio_font_script';  
+      src: local('Gabriola'), url('Gabriola.ttf');
+}
+#divcont {touch-action:none;}
+</style>
+<script>
+var cursore_old;
+var time_old;
+var striscio_attivo=false;
+var scorri_attivo=false;
+var click_abilitato=true;
+var scorri_timeout;
+var num_img=30;
+var num_div=5; //se più di 5 occorre mett più div
+var largh_div=106; //320; 
+var alt_div=160; //480; 
+var largh_div_cont=318; //960
+var alt_div_cont=160; //590;
+var div=[];
+var asc=[];
+var imma=[];
+var primo_div_vis=0;
+var prima_img_vis=0;
+var arr_img=[];
+for (var i=0; i<num_img; i++) {
+arr_img[i]=new Image();
+}
+arr_img[0].src='bouganville.jpg';
+arr_img[1].src='tulipano.jpg';
+arr_img[2].src='ciliegio.jpg';
+arr_img[3].src='viola.jpg';
+arr_img[4].src='loto.jpg';
+arr_img[5].src='margherita.jpg';
+arr_img[6].src='rosa.jpg';
+arr_img[7].src='orchidea.jpg';
+arr_img[8].src='calle.jpg';
+arr_img[9].src='iris.jpg';
+arr_img[10].src='mandorlo.jpg';
+arr_img[11].src='pesco.jpg';
+arr_img[12].src='fresia.jpg';
+arr_img[13].src='glicine.jpg';
+arr_img[14].src='garofano.jpg';
+arr_img[15].src='camelia.jpg';
+arr_img[16].src='biancospino.jpg';
+arr_img[17].src='ortensia.jpg';
+arr_img[18].src='lilla.jpg';
+arr_img[19].src='petunia.jpg';
+arr_img[20].src='mimosa.jpg';
+arr_img[21].src='zagara.jpg';
+arr_img[22].src='geranio.jpg';
+arr_img[23].src='peonia.jpg';
+arr_img[24].src='dalia.jpg';
+arr_img[25].src='zinnia.jpg';
+arr_img[26].src='giglio.jpg';
+arr_img[27].src='lilium.jpg';
+arr_img[28].src='amarillide.jpg';
+arr_img[29].src='anthurium.jpg';
+
+var arr_didascalie=[];
+arr_didascalie[0]='Bouganville';
+arr_didascalie[1]='Tulipano';
+arr_didascalie[2]='Ciliegio';
+arr_didascalie[3]='Viola';
+arr_didascalie[4]='Loto';
+arr_didascalie[5]='Margherita';
+arr_didascalie[6]='Rosa';
+arr_didascalie[7]='Orchidea';
+arr_didascalie[8]='Calle';
+arr_didascalie[9]='Iris';
+arr_didascalie[10]='Mandorlo';
+arr_didascalie[11]='Pesco';
+arr_didascalie[12]='Fresia';
+arr_didascalie[13]='Glicine';
+arr_didascalie[14]='Garofano';
+arr_didascalie[15]='Camelia';
+arr_didascalie[16]='Biancospino';
+arr_didascalie[17]='Ortensia';
+arr_didascalie[18]='Lillà';
+arr_didascalie[19]='Petunia';
+arr_didascalie[20]='Mimosa';
+arr_didascalie[21]='Zagara';
+arr_didascalie[22]='Geranio';
+arr_didascalie[23]='Peonia';
+arr_didascalie[24]='Dalia';
+arr_didascalie[25]='Zinnia';
+arr_didascalie[26]='Giglio';
+arr_didascalie[27]='Lilium';
+arr_didascalie[28]='Amarillide';
+arr_didascalie[29]='Anthurium';
+
+
+init=function() {
+//divspan=document.getElementById('span1');
+
+
+divcont=document.getElementById('divcont');
+divcont.style.width=largh_div_cont+'px';
+divcont.style.height=alt_div_cont+'px';
+divcont.ondragstart=function() {return false;}
+div[0]=document.getElementById('div0');
+div[1]=document.getElementById('div1');
+div[2]=document.getElementById('div2');
+div[3]=document.getElementById('div3');
+div[4]=document.getElementById('div4');
+for (var i=0; i<num_div; i++){
+div[i].style.height=alt_div+'px';
+div[i].style.width=largh_div+'px';
+asc[i]=i*largh_div;
+div[i].style.left=asc[i]+'px';
+div[i].style.top=parseInt((alt_div_cont-alt_div)/2)+'px';
+}
+imma[0]=document.getElementById('imm0');
+imma[0].src=arr_img[0].src;
+imma[1]=document.getElementById('imm1');
+imma[1].src=arr_img[1].src;
+imma[2]=document.getElementById('imm2');
+imma[2].src=arr_img[2].src;
+imma[3]=document.getElementById('imm3');
+imma[3].src=arr_img[3].src;
+imma[4]=document.getElementById('imm4');
+imma[4].src=arr_img[4].src;
+divcont.addEventListener("pointermove", handler_pointer_move);
+divcont.addEventListener("pointerup", handler_pointer_up);
+divcont.addEventListener("pointerdown", handler_pointer_down);
+
+div_ingr=document.getElementById('div_overlay');
+div_ingr.style.width='100%';
+div_ingr.style.height='80%';
+div_ingr.style.top='50px';
+
+span_nascondi_overlay=document.getElementById('span_overlay');
+span_nascondi_overlay.addEventListener("click", nascondi_overlay);
+
+} 
+
+nascondi_overlay=()=>{
+div_ingr.style.display='none';
+}
+
+aggiorna_div=function(s) {
+var l_temp=largh_div_cont;
+var n_temp=(l_temp-largh_div-asc[primo_div_vis])/largh_div;
+var ultima_img_vis=prima_img_vis+Math.ceil(n_temp);
+var ultimo_div_vis=Math.ceil(primo_div_vis+n_temp);
+if (ultimo_div_vis>=num_div) {
+   ultimo_div_vis-=num_div;
+}
+if (prima_img_vis==0 && (asc[primo_div_vis]+Math.round(s))>0) {
+s=-asc[primo_div_vis];
+}
+if (ultima_img_vis==(num_img-1) && (asc[ultimo_div_vis]+Math.round(s))<(largh_div_cont-largh_div)) {
+s=-asc[ultimo_div_vis]+(largh_div_cont-largh_div);
+}
+
+for (var i=0; i<num_div; i++) {
+asc[i]+=Math.round(s);
+if (s<0 && asc[i]<=-largh_div){
+asc[i]+=num_div*largh_div;
+primo_div_vis+=1;
+if (primo_div_vis==num_div) primo_div_vis=0;
+prima_img_vis+=1;
+var m_temp=prima_img_vis+num_div-1;
+if (m_temp<num_img) {
+imma[i].src=arr_img[m_temp].src;
+}
+}
+if (s>0 && asc[i]>(num_div-1)*largh_div) {
+asc[i]-=num_div*largh_div;
+primo_div_vis-=1;
+if (primo_div_vis<0) primo_div_vis=num_div-1;
+prima_img_vis-=1;
+imma[i].src=arr_img[prima_img_vis].src;
+}
+}
+for (var i=0; i<num_div; i++) {
+div[i].style.left=asc[i]+'px';
+}
+}
+
+scorri=function (vel, dt) {
+aggiorna_div(vel*dt);
+if (!scorri_attivo && Math.abs(vel)>2.4) {
+scorri_attivo=true;
+}
+if (scorri_attivo) {
+var vel_temp=Math.abs(vel);
+vel_temp-=0.05;
+if (vel_temp<=0) {
+scorri_attivo=false;
+return;
+}
+vel_temp=vel_temp/vel*Math.abs(vel);
+scorri_timeout=setTimeout (scorri, 15, vel_temp, 15);
+}
+}
+
+function handler_pointer_move(event) {
+var IdPuntatore=event.pointerId;
+//Questa serve per i browser dei PC!
+divcont.releasePointerCapture(IdPuntatore); 
+
+if (!striscio_attivo) {
+cursore_old=event.clientX;
+time_old=event.timeStamp;
+striscio_attivo=true;
+click_abilitato=false;
+}else {
+var delta_x=event.clientX-cursore_old;
+cursore_old=event.clientX;
+var delta_t=event.timeStamp-time_old;
+time_old=event.timeStamp;
+var velocita=delta_x/delta_t;
+if (!scorri_attivo) {
+scorri(velocita, delta_t);
+}
+}
+}
+function handler_pointer_down(event) {
+if (scorri_attivo) {
+clearTimeout(scorri_timeout);
+scorri_attivo=false;
+click_abilitato=false;
+}
+}
+function handler_pointer_up(e) {
+striscio_attivo=false;
+if (click_abilitato) {
+var elem_cliccato=e.target;
+if (elem_cliccato.id.slice(0, 3)=='imm') {
+var obj=document.getElementById('img_overlay');
+obj.src=elem_cliccato.src;
+var corr=parseInt(elem_cliccato.id.slice(3,4));
+if (corr>=primo_div_vis) {
+corr=prima_img_vis+corr-primo_div_vis;
+}
+else {
+corr=prima_img_vis+num_div-primo_div_vis+corr;
+}
+var obj=document.getElementById('span_didasc');
+obj.innerHTML=arr_didascalie[corr];
+div_ingr.style.display='flex';
+}
+}
+click_abilitato=true;
+}
+window.addEventListener('DOMContentLoaded', init);
+</script>
+</head>
+<body>
+<br>
+<center>
+<img src="../nome_gio.png" width="70%">
+</center>
+<br>
+<center>
+<span style="font-family:mio_font_script; font-size:1.5rem; color:red;">
+Carosello di fiori a striscio
+</span>
+</center>
+<br>
+
+<div id='div_overlay' style='position:absolute; display:none; flex-direction:column; align-items:end; justify-content:start; background-color:rgba(0,0,0,0.7); z-index:9999;'>
+<span id='span_overlay' style='font-size:3rem; padding:5px; color:red;'>&times;</span>
+<img id='img_overlay' src='' style='width:100%;'>
+<span id='span_didasc' style='font-family:mio_font_script; font-size:2rem; font-style:italic; padding:10px; color:fuchsia;'></span>
+</div>
+
+<center>
+
+<div id="divcont" style="position:relative; background-color:#00FFFF; display:flex; flex-direction:row; flex-wrap:nowrap; align-items: center; overflow:hidden;">
+<div id="div0" style="position:absolute; left:0px; top:0px; display:flex; align-items:center; justify-content:center; background-color:azure;">
+<img id='imm0' src='' width='98%'>
+</div>
+<div id="div1" style="position:absolute; left:0px; top:0px; display:flex; align-items:center; justify-content:center; background-color:bisque;">
+<img id='imm1' src='' width='98%'>
+</div>
+<div id="div2" style="position:absolute; left:0px; top:0px; display:flex; align-items:center; justify-content:center; background-color:lemonchiffon;">
+<img id='imm2' src='' width='98%'>
+</div>
+<div id="div3" style="position:absolute; left:0px; top:0px; display:flex; align-items:center; justify-content:center; background-color:honeydew;">
+<img id='imm3' src='' width='98%'>
+</div>
+<div id="div4" style="position:absolute; left:0px; top:0px; display:flex; align-items:center; justify-content:center; background-color:beige;">
+<img id='imm4' src='' width='98%'>
+</div>
+</div>
+
+
+</center>
+<br><br><br>
+<br><br><br>
+<span style="padding:20px;">
+<a href="../giordana.html" style="font-family:mio_font_script; font-size:1rem; font-style:italic; text-decoration:none; color:brown;">
+Torna alla mia home page
+</a>
+</span>
+
+
+<div id="divdati" style="display:flex; color:#FF0000; font-family: Comic San MS; font-size:25px;">
+<span id="span1" style="width: 800px;">
+</span>
+</div>
+<br><br><br><br><br><br><br>
+
+
+
+</body>
+</html>
