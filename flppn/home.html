@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Home Page</title>
+<style>
+html {
+font-family: serif;
+font-size: 18px;
+line-height: 24px;
+}
+body {
+margin: 0px;
+padding: 0px;
+background-color:#fffce0;
+}
+
+@font-face {
+font-family: 'mio_font_script';
+src: local('Gabriola'), url('Gabriola.ttf');
+}
+
+@media screen and (min-width; 700px) {
+div {}
+}
+</style>
+<script>
+
+animaz=()=>{
+var largh_cuore=parseInt(div_cuore.style.width);
+var alt_cuore=parseInt(div_cuore.style.height); 
+if (largh_cuore-delta>0) {
+div_cuore.style.width=(largh_cuore-delta)+"px";
+div_cuore.style.height=(alt_cuore-parseInt(delta*alt_cuore/largh_cuore))+"px";
+div_cuore.style.left=parseInt(parseInt(div_cuore.style.left)+delta/2)+"px";
+div_cuore.style.top=parseInt(parseInt(div_cuore.style.top)+(delta*alt_cuore/largh_cuore)/2)+"px"; 
+setTimeout(animaz, 60);
+}
+else {
+div_cuore.style.display="none";
+}
+}
+
+init=()=>{
+delta=10;
+var div_foto=document.getElementById("foto");
+div_cuore=document.getElementById("cuore"); 
+var x_cuore=parseInt((div_foto.clientWidth-div_cuore.clientWidth)/2);
+var y_cuore=parseInt((div_foto.clientHeight-div_cuore.clientHeight)/2); 
+div_cuore.style.width=div_cuore.clientWidth+'px';
+div_cuore.style.height=div_cuore.clientHeight+'px';
+div_cuore.style.left=x_cuore+"px"; 
+div_cuore.style.top=y_cuore+"px"; 
+setTimeout(animaz, 4000);
+}
+
+document.addEventListener('DOMContentLoaded', init);
+
+</script>
+<body>
+<div id="cont" style="display: flex; flex-direction:column; align-items:center; width:100vw;">
+
+<div style="width:90vw; height:7vw;">
+</div>
+<div style="display:flex; width:90vw; height:120px; background-color:#ff00ff; justify-content:center; align-items:center;">
+<span style="font-family: mio_font_script; font-size:40px; font-style:italic; font-weight:bold; color:#ffee10;">
+My love page
+</span>
+</div>
+<div style="width:90vw; height:3vw;">
+</div>
+<div id="foto" style="position:relative; width:90vw; height:75vw; display:flex; justify-content:center; align-items:center;">
+<img src="bruna.png" width="100%">
+<div id="cuore" style="position:absolute; display:flex; width:60vw; height:57vw;">
+<img src="cuore.png" width="100%">
+</div>
+</div> 
+
+<div style="width:90vw; height:50vw;">
+</div>
+
+
+
+
+</div>
+</body>
+</html>
